@@ -1,0 +1,19 @@
+.cardBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  &-wrapper {
+    width: 1660px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+}
+
+.card {
+  width: 220px;
+  border: 1px solid #333;
+  padding: 10px;
+}
