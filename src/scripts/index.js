@@ -1,4 +1,5 @@
 import { getData } from "./getData.js";
+import image from "../images/webpack.png";
 import "../styles/card.scss";
 
 const root = document.getElementById("app");
@@ -16,6 +17,7 @@ const render = (data) => {
   });
 
   root.innerHTML = `
+    <img src=${image} alt="webpack" width="200" />
     <div class="cardBox">
       <div class="cardBox-wrapper">
         ${htmlCode}
