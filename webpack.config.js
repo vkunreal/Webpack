@@ -4,12 +4,22 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const path = require("path");
 
+const babelOptions = (preset) => {
+  const options = {
+    presets: ["@babel/preset-env"],
+  };
+
+  if (preset) options.presets.push(preset);
+
+  return options;
+};
+
 module.exports = {
   mode: "production",
   context: path.resolve(__dirname, "src"),
 
   entry: {
-    main: ["@babel/polyfill", "./scripts/index.js"],
+    main: ["@babel/polyfill", "./scripts/index.jsx"],
   },
 
   output: {
@@ -32,9 +42,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env"],
-          },
+          options: babelOptions(),
         },
       },
       {
@@ -42,9 +50,15 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env", "@babel/preset-typescript"],
-          },
+          options: babelOptions("@babel/preset-typescript"),
+        },
+      },
+      {
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: babelOptions("@babel/preset-react"),
         },
       },
     ],
