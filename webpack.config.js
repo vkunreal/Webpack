@@ -9,23 +9,50 @@ const babelOptions = (preset) => {
     presets: ["@babel/preset-env"],
   };
 
-  if (preset) options.presets.push(preset);
+  if (preset) {
+    preset.forEach((elem) => options.presets.push(elem));
+  }
 
   return options;
 };
 
 module.exports = {
   mode: "production",
-  context: path.resolve(__dirname, "src"),
 
   entry: {
-    main: ["@babel/polyfill", "./scripts/index.jsx"],
+    main: ["@babel/polyfill", path.resolve(__dirname, "src", "index.tsx")],
   },
 
   output: {
-    path: path.resolve(__dirname, "./dist"),
+    path: path.resolve(__dirname, "dist"),
     filename: "[name].[contenthash].js",
   },
+
+  resolve: {
+    extensions: [".ts", ".tsx", ".js"],
+  },
+
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "public", "index.html"),
+      filename: "index.html",
+    }),
+
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash].css",
+    }),
+
+    new CleanWebpackPlugin(),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "public/favicon.ico"),
+          to: path.resolve(__dirname, "dist"),
+        },
+      ],
+    }),
+  ],
 
   module: {
     rules: [
@@ -38,11 +65,22 @@ module.exports = {
         use: ["file-loader"],
       },
       {
-        test: /\.js$/,
+        test: /\.jsx$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: babelOptions(),
+          options: babelOptions(["@babel/preset-react"]),
+        },
+      },
+      {
+        test: /\.tsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: babelOptions([
+            "@babel/preset-react",
+            "@babel/preset-typescript",
+          ]),
         },
       },
       {
@@ -50,41 +88,11 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: babelOptions("@babel/preset-typescript"),
-        },
-      },
-      {
-        test: /\.jsx$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: babelOptions("@babel/preset-react"),
+          options: babelOptions(["@babel/preset-typescript"]),
         },
       },
     ],
   },
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "index.html",
-      filename: "index.html",
-    }),
-
-    new MiniCssExtractPlugin({
-      filename: "[name].[contenthash].css",
-    }),
-
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, "src/favicon.ico"),
-          to: path.resolve(__dirname, "dist"),
-        },
-      ],
-    }),
-
-    new CleanWebpackPlugin(),
-  ],
 
   devServer: {
     port: 8080,
